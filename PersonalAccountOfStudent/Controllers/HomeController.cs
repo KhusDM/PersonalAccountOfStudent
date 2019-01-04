@@ -9,7 +9,7 @@ using PersonalAccountOfStudent.Models;
 
 namespace PersonalAccountOfStudent.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
