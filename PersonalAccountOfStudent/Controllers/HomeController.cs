@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PersonalAccountOfStudent.Models;
 
 namespace PersonalAccountOfStudent.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
@@ -15,7 +17,12 @@ namespace PersonalAccountOfStudent.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Progress()
+        {
+            return View();
+        }
+
+        public IActionResult Schedule()
         {
             return View();
         }
