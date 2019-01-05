@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using PersonalAccountOfStudent.TablesGateway;
 
 namespace PersonalAccountOfStudent.Controllers
 {
@@ -33,7 +34,8 @@ namespace PersonalAccountOfStudent.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = db.Users.FirstOrDefault(u => u.Login == model.Login && u.Password == model.Password);
+                //User user = db.Users.FirstOrDefault(u => u.Login == model.Login && u.Password == model.Password);
+                User user = UserGateway.FindtUser(db, model.Login, model.Password);
                 if (user != null)
                 {
                     await Authenticate(model.Login);

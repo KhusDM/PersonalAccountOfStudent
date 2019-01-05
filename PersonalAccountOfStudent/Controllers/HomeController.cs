@@ -22,12 +22,12 @@ namespace PersonalAccountOfStudent.Controllers
 
         public IActionResult Progress()
         {
-            return View();
+            return RedirectToAction("Index", "Progress");
         }
 
         public IActionResult Schedule()
         {
-            return View();
+            return RedirectToAction("Index", "Schedule");
         }
 
         public async Task<IActionResult> Logout()
