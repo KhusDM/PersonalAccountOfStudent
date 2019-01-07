@@ -2,7 +2,9 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
-<a class="navbar-brand" asp-area="" asp-controller="Schedule" asp-action="DownloadSchedule" asp-route-filename="variant.xls">Скачать расписание</a>
+@if ((bool)ViewData["FileExist"])
+{
+    <a class="navbar-brand" asp-area="" asp-controller="Schedule" asp-action="DownloadSchedule">Скачать расписание</a>
+}
+@Html.Raw(ViewData["Grid"])
 

@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace PersonalAccountOfStudent.Models
 {
-    public class Class
+    public class Assessment
     {
         public int Id { get; set; }
         [Required]
-        public string NumberClass { get; set; }
-        public int? CountStudents { get; set; }
-        public int? TeacherId { get; set; }
-        public Teacher Teacher { get; set; }
+        public string UserGUID { get; set; }
+        public User User { get; set; }
+        [Required]
+        public string Subject { get; set; }
+        [Required]
+        public double Mark { get; set; }
     }
 }
