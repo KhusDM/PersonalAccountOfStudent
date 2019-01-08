@@ -19,14 +19,12 @@ namespace PersonalAccountOfStudent
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Env = env;
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Env { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -42,7 +40,7 @@ namespace PersonalAccountOfStudent
             services.AddDbContext<SchoolContext>(options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
-                options => options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/LogIn"));
+                options => options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

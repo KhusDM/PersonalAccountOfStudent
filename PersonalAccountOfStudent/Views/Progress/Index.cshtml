@@ -1,8 +1,6 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Index";
 }
-
 @if ((bool)ViewData["FileExist"])
 {
     <a class="navbar-brand" asp-area="" asp-controller="Progress" asp-action="DownloadProgress">Скачать успеваемость</a>

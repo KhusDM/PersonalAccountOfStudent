@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ using NPOI.XSSF.UserModel;
 
 namespace PersonalAccountOfStudent.Controllers
 {
+    [Authorize]
     public class ScheduleController : Controller
     {
         private IHostingEnvironment Env { get; }
@@ -47,8 +49,8 @@ namespace PersonalAccountOfStudent.Controllers
                     }
                     else
                     {
-                        XSSFWorkbook wssfwb = new XSSFWorkbook(memory); //This will read 2007 Excel format  
-                        sheet = wssfwb.GetSheetAt(0); //get first sheet from workbook   
+                        XSSFWorkbook xssfwb = new XSSFWorkbook(memory); //This will read 2007 Excel format  
+                        sheet = xssfwb.GetSheetAt(0); //get first sheet from workbook   
                     }
 
                     sb.Append("<table class='table'><tr>");
@@ -58,7 +60,7 @@ namespace PersonalAccountOfStudent.Controllers
                     for (int i = 0; i < cellCount; i++)
                     {
                         NPOI.SS.UserModel.ICell cell = headerRow.GetCell(i);
-                        if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
+                        if (cell == null || String.IsNullOrWhiteSpace(cell.ToString())) continue;
                         sb.Append("<th colspan='2'>" + cell.ToString() + "</th>");
                     }
 
@@ -96,23 +98,28 @@ namespace PersonalAccountOfStudent.Controllers
 
         public async Task<IActionResult> DownloadSchedule()
         {
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(path, FileMode.Open))
+            if (System.IO.File.Exists(path) && fileInfo.Length > 0)
             {
-                await stream.CopyToAsync(memory);
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+
+                memory.Position = 0;
+
+                string extension = fileInfo.Extension;
+                RegistryKey key = Registry.ClassesRoot.OpenSubKey(extension, false);
+                object value = key != null ? key.GetValue("Content Type", null) : null;
+                string mimeType = value != null ? value.ToString() : String.Empty;
+
+                if (!String.IsNullOrEmpty(mimeType))
+                    return File(memory, mimeType, fileInfo.Name);
+
+                return Content("trouble...");
             }
 
-            memory.Position = 0;
-
-            string extension = new FileInfo(path).Extension;
-            RegistryKey key = Registry.ClassesRoot.OpenSubKey(extension, false);
-            object value = key != null ? key.GetValue("Content Type", null) : null;
-            string mimeType = value != null ? value.ToString() : String.Empty;
-
-            if (!String.IsNullOrEmpty(mimeType))
-                return File(memory, mimeType, fileInfo.Name);
-
-            return Content("trouble...");
+            return Content(StatusCodes.Status404NotFound.ToString());
         }
     }
 }

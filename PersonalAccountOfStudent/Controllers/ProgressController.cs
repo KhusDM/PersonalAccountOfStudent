@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using PersonalAccountOfStudent.Models;
 
 namespace PersonalAccountOfStudent.Controllers
 {
+    [Authorize]
     public class ProgressController : Controller
     {
         private IHostingEnvironment Env { get; }
@@ -126,7 +128,7 @@ namespace PersonalAccountOfStudent.Controllers
                         int cellCount = secondRow.LastCellNum;
                         for (int i = 0; i < cellCount; i++)
                         {
-                            NPOI.SS.UserModel.ICell cell1 = secondRow.GetCell(0);
+                            NPOI.SS.UserModel.ICell cell1 = secondRow.GetCell(i);
                             if (cell1 != null && !String.IsNullOrEmpty(cell1.ToString()))
                                 sb.Append("<th>" + cell1.ToString() + "</th>");
                         }
@@ -188,7 +190,7 @@ namespace PersonalAccountOfStudent.Controllers
 
                     memory.Position = 0;
 
-                    string extension = new FileInfo(fullPath).Extension;
+                    string extension = fileInfo.Extension;
                     RegistryKey key = Registry.ClassesRoot.OpenSubKey(extension, false);
                     object value = key != null ? key.GetValue("Content Type", null) : null;
                     string mimeType = value != null ? value.ToString() : String.Empty;

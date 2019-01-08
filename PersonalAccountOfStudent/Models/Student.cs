@@ -11,7 +11,6 @@ namespace PersonalAccountOfStudent.Models
         public int Id { get; set; }
         [Required]
         public string UserGUID { get; set; }
-        [Required]
         public User User { get; set; }
         [Required]
         public string FIO { get; set; }

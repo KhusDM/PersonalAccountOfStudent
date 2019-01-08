@@ -10,7 +10,7 @@ namespace PersonalAccountOfStudent.TablesGateway
     {
         public static User FindtUser(SchoolContext context, string login, string password)
         {
-            return context.Users.FirstOrDefault(u => u.Login == login && u.Password == password);
+            return context.Users.FirstOrDefault(user => user.Login == login && user.Password == password);
         }
 
         public static void InsertUser(SchoolContext context, User user)
