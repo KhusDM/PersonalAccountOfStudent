@@ -15,5 +15,6 @@ namespace PersonalAccountOfStudent.Models
         [Required]
         public string Password { get; set; }
         public string UserType { get; set; }
+        public string Avatar { get; set; } = "Avatar.png";
     }
 }

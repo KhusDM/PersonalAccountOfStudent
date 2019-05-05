@@ -56,7 +56,7 @@ namespace PersonalAccountOfStudent.Controllers
             {
                 foreach (var subject in Assessments.Keys)
                 {
-                    Assessments[subject].AddRange(db.Assessments.Where(assessment => assessment.UserGUID == userGUID && assessment.Subject == subject)
+                    Assessments[subject].AddRange(db.Assessments.Where(assessment => assessment.UserGUID == userGUID && assessment.Subject.SubjectName == subject)
                         .Select(assessment => assessment.Mark));
                 }
 

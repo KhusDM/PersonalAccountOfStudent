@@ -13,7 +13,8 @@ namespace PersonalAccountOfStudent.Models
         public string UserGUID { get; set; }
         public User User { get; set; }
         [Required]
-        public string Subject { get; set; }
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
         [Required]
         public double Mark { get; set; }
     }

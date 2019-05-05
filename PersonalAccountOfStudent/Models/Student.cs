@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +15,8 @@ namespace PersonalAccountOfStudent.Models
         public User User { get; set; }
         [Required]
         public string FIO { get; set; }
-        public int? Age { get; set; }
+        [Required]
+        public DateTime DateBirth { get; set; }
         public string Telephone { get; set; }
         public int? ClassId { get; set; }
         public Class Class { get; set; }

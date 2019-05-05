@@ -14,8 +14,10 @@ namespace PersonalAccountOfStudent.Models
         public User User { get; set; }
         [Required]
         public string FIO { get; set; }
-        public int? Age { get; set; }
+        [Required]
+        public DateTime DateBirth { get;set;}
         public string Telephone { get; set; }
-        public string Subject { get; set; }
+        public int? SubjectId { get; set; }
+        public Subject Subject { get; set; }
     }
 }
