@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="form-align">
+    @*<h2>Занеси</h2>*@
+    @model PersonalAccountOfStudent.ViewModels.AssessmentModel
+    <form asp-action="Assessment" asp-controller="Assessment" asp-anti-forgery="true">
+        <div class="validation" asp-validation-summary="ModelOnly" />
+        <div>
+            <div class="form-group">
+                <label for="ClassId">Выберите класс</label>
+                @Html.DropDownList("ClassId", ViewData["Classes"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="StudentId">Выберите учащегося</label>
+                @Html.DropDownList("StudentId", ViewData["Students"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="SubjectId">Выберите предмет</label>
+                @Html.DropDownList("SubjectId", ViewData["Subjects"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Mark">Поставьте оценку</label>
+                <input asp-for="Mark" class="form-control" placeholder="Оценка" />
+            </div>
+            <button type="submit" class="btn btn-primary">Занести</button>
+            <input type="button" onclick="document.getElementById('Mark').value = '';" class="btn btn-primary" value="Очистить">
+        </div>
+    </form>
+    @if (ViewData["Success"] != null && (bool)ViewData["Success"] == true)
+    {
+        <script type="text/javascript">
+            alert("Оценка занесена успешно");
+        </script>
+    }
+</div>
+@*<h1>Assessment</h1>*@
+@*@Html.DropDownList("class_id", ViewBag.Classes as SelectList)
+    </br>
+    @Html.DropDownList("student_id", ViewBag.Students as SelectList)
+    </br>
+    @Html.DropDownList("subject_id", ViewBag.Subject as SelectList)*@
+

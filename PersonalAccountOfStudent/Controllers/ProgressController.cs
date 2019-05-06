@@ -51,16 +51,16 @@ namespace PersonalAccountOfStudent.Controllers
 
         public IActionResult Index()
         {
-            var userGUID = db.Users.FirstOrDefault(user => user.Login == HttpContext.User.Identity.Name && user.UserType == "Student").GUID;
-            if (!String.IsNullOrEmpty(userGUID))
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
+            if (user != null)
             {
                 foreach (var subject in Assessments.Keys)
                 {
-                    Assessments[subject].AddRange(db.Assessments.Where(assessment => assessment.UserGUID == userGUID && assessment.Subject.SubjectName == subject)
+                    Assessments[subject].AddRange(db.Assessments.Where(assessment => assessment.UserGUID == user.GUID && assessment.Subject.SubjectName == subject)
                         .Select(assessment => assessment.Mark));
                 }
 
-                var studentFIO = db.Students.FirstOrDefault(student => student.UserGUID == userGUID).FIO;
+                var studentFIO = db.Students.FirstOrDefault(student => student.UserGUID == user.GUID).FIO;
                 string fullPath = Path.Combine(path, String.Format("Успеваемость_{0}.xlsx", studentFIO));
                 fileInfo = new FileInfo(fullPath);
 
@@ -161,6 +161,8 @@ namespace PersonalAccountOfStudent.Controllers
                     ViewData["FileExist"] = false;
                     ViewData["Grid"] = "";
                 }
+
+                ViewData["UserType"] = user.UserType;
             }
             else
             {
@@ -173,10 +175,10 @@ namespace PersonalAccountOfStudent.Controllers
 
         public async Task<IActionResult> DownloadProgress()
         {
-            var userGUID = db.Users.FirstOrDefault(user => user.Login == HttpContext.User.Identity.Name && user.UserType == "Student").GUID;
-            if (!String.IsNullOrEmpty(userGUID))
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
+            if (user != null)
             {
-                var studentFIO = db.Students.FirstOrDefault(student => student.UserGUID == userGUID).FIO;
+                var studentFIO = db.Students.FirstOrDefault(student => student.UserGUID == user.GUID).FIO;
                 string fullPath = Path.Combine(path, String.Format("Успеваемость_{0}.xlsx", studentFIO));
                 fileInfo = new FileInfo(fullPath);
 

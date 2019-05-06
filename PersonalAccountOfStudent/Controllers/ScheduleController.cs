@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using PersonalAccountOfStudent.Models;
 
 namespace PersonalAccountOfStudent.Controllers
 {
@@ -19,73 +20,86 @@ namespace PersonalAccountOfStudent.Controllers
     public class ScheduleController : Controller
     {
         private IHostingEnvironment Env { get; }
+        private SchoolContext db;
         private FileInfo fileInfo;
         private string path;
 
-        public ScheduleController(IHostingEnvironment env)
+        public ScheduleController(IHostingEnvironment env, SchoolContext context)
         {
             Env = env;
+            db = context;
             path = Path.Combine(Env.WebRootPath, "files", "Schedule.xlsx");
             fileInfo = new FileInfo(path);
         }
 
         public IActionResult Index()
         {
-            StringBuilder sb = new StringBuilder();
-            if (System.IO.File.Exists(path) && fileInfo.Length > 0)
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
+            if (user != null)
             {
-                using (var stream = new FileStream(path, FileMode.Open))
+                StringBuilder sb = new StringBuilder();
+                if (System.IO.File.Exists(path) && fileInfo.Length > 0)
                 {
-                    var memory = new MemoryStream();
-                    stream.CopyTo(memory);
-                    memory.Position = 0;
-
-                    ISheet sheet;
-                    string fileExtension = fileInfo.Extension;
-                    if (fileExtension == ".xls")
+                    using (var stream = new FileStream(path, FileMode.Open))
                     {
-                        HSSFWorkbook hssfwb = new HSSFWorkbook(memory); //This will read the Excel 97-2000 formats  
-                        sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook  
-                    }
-                    else
-                    {
-                        XSSFWorkbook xssfwb = new XSSFWorkbook(memory); //This will read 2007 Excel format  
-                        sheet = xssfwb.GetSheetAt(0); //get first sheet from workbook   
-                    }
+                        var memory = new MemoryStream();
+                        stream.CopyTo(memory);
+                        memory.Position = 0;
 
-                    sb.Append("<table class='table'><tr>");
-
-                    IRow headerRow = sheet.GetRow(0); //Get Header Row
-                    int cellCount = headerRow.LastCellNum;
-                    for (int i = 0; i < cellCount; i++)
-                    {
-                        NPOI.SS.UserModel.ICell cell = headerRow.GetCell(i);
-                        if (cell == null || String.IsNullOrWhiteSpace(cell.ToString())) continue;
-                        sb.Append("<th colspan='2'>" + cell.ToString() + "</th>");
-                    }
-
-                    sb.Append("</tr>");
-
-                    for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++) //Read Excel File
-                    {
-                        sb.AppendLine("<tr>");
-
-                        IRow row = sheet.GetRow(i);
-                        if (row == null || row.Cells.All(d => d.CellType == CellType.Blank)) continue;
-                        for (int j = row.FirstCellNum; j <= cellCount; j++)
+                        ISheet sheet;
+                        string fileExtension = fileInfo.Extension;
+                        if (fileExtension == ".xls")
                         {
-                            if (row.GetCell(j) != null)
-                                sb.Append("<td>" + row.GetCell(j).ToString() + "</td>");
+                            HSSFWorkbook hssfwb = new HSSFWorkbook(memory); //This will read the Excel 97-2000 formats  
+                            sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook  
+                        }
+                        else
+                        {
+                            XSSFWorkbook xssfwb = new XSSFWorkbook(memory); //This will read 2007 Excel format  
+                            sheet = xssfwb.GetSheetAt(0); //get first sheet from workbook   
                         }
 
-                        sb.AppendLine("</tr>");
+                        sb.Append("<table class='table'><tr>");
+
+                        IRow headerRow = sheet.GetRow(0); //Get Header Row
+                        int cellCount = headerRow.LastCellNum;
+                        for (int i = 0; i < cellCount; i++)
+                        {
+                            NPOI.SS.UserModel.ICell cell = headerRow.GetCell(i);
+                            if (cell == null || String.IsNullOrWhiteSpace(cell.ToString())) continue;
+                            sb.Append("<th colspan='2'>" + cell.ToString() + "</th>");
+                        }
+
+                        sb.Append("</tr>");
+
+                        for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++) //Read Excel File
+                        {
+                            sb.AppendLine("<tr>");
+
+                            IRow row = sheet.GetRow(i);
+                            if (row == null || row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+                            for (int j = row.FirstCellNum; j <= cellCount; j++)
+                            {
+                                if (row.GetCell(j) != null)
+                                    sb.Append("<td>" + row.GetCell(j).ToString() + "</td>");
+                            }
+
+                            sb.AppendLine("</tr>");
+                        }
+
+                        sb.Append("</table>");
                     }
 
-                    sb.Append("</table>");
+                    ViewData["FileExist"] = true;
+                    ViewData["Grid"] = sb.ToString();
+                }
+                else
+                {
+                    ViewData["FileExist"] = false;
+                    ViewData["Grid"] = "";
                 }
 
-                ViewData["FileExist"] = true;
-                ViewData["Grid"] = sb.ToString();
+                ViewData["UserType"] = user.UserType;
             }
             else
             {
