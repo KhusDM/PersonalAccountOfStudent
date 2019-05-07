@@ -21,12 +21,20 @@ namespace PersonalAccountOfStudent.Controllers
         [HttpGet]
         public IActionResult Assessment()
         {
-            var classes = db.Classes.OrderBy(c => c.NumberClass).ToList();
-            ViewData["Classes"] = new SelectList(classes, "Id", "NumberClass");
-            ViewData["Students"] = new SelectList(db.Students.Where(s => s.ClassId == classes[0].Id).OrderBy(s => s.FIO).ToList(), "Id", "FIO");
-            ViewData["Subjects"] = new SelectList(db.Subjects.OrderBy(s => s.SubjectName).ToList(), "Id", "SubjectName");
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
+            if (user != null)
+            {
+                ViewData["UserType"] = user.UserType;
 
-            return View();
+                var classes = db.Classes.OrderBy(c => c.NumberClass).ToList();
+                ViewData["Classes"] = new SelectList(classes, "Id", "NumberClass");
+                ViewData["Students"] = new SelectList(db.Students.Where(s => s.ClassId == classes[0].Id).OrderBy(s => s.FIO).ToList(), "Id", "FIO");
+                ViewData["Subjects"] = new SelectList(db.Subjects.OrderBy(s => s.SubjectName).ToList(), "Id", "SubjectName");
+
+                return View();
+            }
+
+            return new EmptyResult();
         }
 
         public IActionResult GetStudents(int id)
@@ -44,22 +52,30 @@ namespace PersonalAccountOfStudent.Controllers
         [HttpPost]
         public async Task<IActionResult> Assessment(AssessmentModel model)
         {
-            ViewData["Success"] = false;
-            if (ModelState.IsValid)
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
+            if (user != null)
             {
-                var student = db.Students.FirstOrDefault(s => s.Id == model.StudentId && s.ClassId == model.ClassId);
-                Assessment assessment = new Assessment { UserGUID = student.UserGUID, SubjectId = model.SubjectId, Mark = model.Mark };
-                db.Assessments.Add(assessment);
-                db.SaveChanges();
-                ViewData["Success"] = true;
-                //ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                ViewData["UserType"] = user.UserType;
+
+                ViewData["Success"] = false;
+                if (ModelState.IsValid)
+                {
+                    var student = db.Students.FirstOrDefault(s => s.Id == model.StudentId && s.ClassId == model.ClassId);
+                    Assessment assessment = new Assessment { UserGUID = student.UserGUID, SubjectId = model.SubjectId, Mark = model.Mark };
+                    db.Assessments.Add(assessment);
+                    db.SaveChanges();
+                    ViewData["Success"] = true;
+                    //ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                }
+
+                ViewData["Classes"] = new SelectList(db.Classes.OrderBy(c => c.NumberClass).ToList(), "Id", "NumberClass", model.ClassId);
+                ViewData["Students"] = new SelectList(db.Students.Where(s => s.ClassId == model.ClassId).OrderBy(s => s.FIO).ToList(), "Id", "FIO", model.StudentId);
+                ViewData["Subjects"] = new SelectList(db.Subjects.OrderBy(s => s.SubjectName).ToList(), "Id", "SubjectName");
+
+                return View();
             }
 
-            ViewData["Classes"] = new SelectList(db.Classes.OrderBy(c => c.NumberClass).ToList(), "Id", "NumberClass", model.ClassId);
-            ViewData["Students"] = new SelectList(db.Students.Where(s => s.ClassId == model.ClassId).OrderBy(s => s.FIO).ToList(), "Id", "FIO", model.StudentId);
-            ViewData["Subjects"] = new SelectList(db.Subjects.OrderBy(s => s.SubjectName).ToList(), "Id", "SubjectName");
-
-            return View();
+            return new EmptyResult();
         }
     }
 }
