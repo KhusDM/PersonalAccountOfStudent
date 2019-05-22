@@ -1,9 +1,9 @@
-﻿
+﻿@model PersonalInfoView
 @{
     ViewData["Title"] = "Index";
 }
 
-<img class="avatar avatar-128 img-circle img-thumbnail" style="width:295px;height:265px;" src="@ViewData["AvatarPath"]" />
+<img class="avatar avatar-128 img-circle img-thumbnail" style="width:295px;height:265px;" src="@Model.AvatarPath" />
 <form asp-action="AddImage" asp-controller="Personal" method="post" enctype="multipart/form-data">
     <div>
         <div class="form-group">
@@ -15,49 +15,52 @@
     </div>
 </form>
 <div>
-    <label>ФИО:</label>
-    @if (ViewData["FIO"] != null)
+    @if (Model != null)
     {
-        <span>@ViewData["FIO"]</span>
-    }
-    <br>
-    <label>Дата рождения:</label>
-    @if (ViewData["DateBirth"] != null)
-    {
-        <span>@ViewData["DateBirth"]</span>
-    }
-    <br>
-    <label>Полных лет:</label>
-    @if (ViewData["Age"] != null)
-    {
-        <span>@ViewData["Age"]</span>
-    }
-    <br>
-    <label>Телефон:</label>
-    @if (ViewData["Telephone"] != null)
-    {
-        <span>@ViewData["Telephone"]</span>
-    }
-    <br>
-    @if (ViewData["UserType"] != null)
-    {
-        @if (ViewData["UserType"].ToString() == "Student")
+        <label>ФИО:</label>
+        @if (Model.FIO != null)
         {
-            <label>Класс:</label>
-            @if (ViewData["NumberClass"] != null)
-            {
-                <span>@ViewData["NumberClass"]</span>
-            }
-            <br>
+            <span>@Model.FIO</span>
         }
-        else if (ViewData["UserType"].ToString() == "Teacher")
+        <br>
+        <label>Дата рождения:</label>
+        @if (Model.DateBirth != null)
         {
-            <label>Предмет преподавания:</label>
-            @if (ViewData["SubjectName"] != null)
+            <span>@Model.DateBirth</span>
+        }
+        <br>
+        <label>Полных лет:</label>
+        @if (Model.Age != null)
+        {
+            <span>@Model.Age</span>
+        }
+        <br>
+        <label>Телефон:</label>
+        @if (Model.Telephone != null)
+        {
+            <span>@Model.Telephone</span>
+        }
+        <br>
+        @if (Model.UserType != null)
+        {
+            @if (Model.UserType == "Student")
             {
-                <span>@ViewData["SubjectName"]</span>
+                <label>Класс:</label>
+                @if (Model.NumberClass != null)
+                {
+                    <span>@Model.NumberClass</span>
+                }
+                <br>
             }
-            <br>
+            else if (Model.UserType == "Teacher")
+            {
+                <label>Предмет преподавания:</label>
+                @if (Model.SubjectName != null)
+                {
+                    <span>@Model.SubjectName</span>
+                }
+                <br>
+            }
         }
     }
 </div>

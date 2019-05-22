@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PersonalAccountOfStudent.Models;
+using PersonalAccountOfStudent.ViewModels;
 
 namespace PersonalAccountOfStudent.Controllers
 {
@@ -25,46 +26,21 @@ namespace PersonalAccountOfStudent.Controllers
 
         public IActionResult Index()
         {
+            PersonalInfoView personalInfo = null;
             var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
             if (user != null)
             {
-                string avatarPath = Path.Combine(path, user.Avatar);
-                ViewData["AvatarPath"] = avatarPath;
                 if (user.UserType == "Student")
-                {
-                    var person = db.Students.FirstOrDefault(s => s.UserGUID == user.GUID);
-                    ViewData["FIO"] = person.FIO;
-                    ViewData["DateBirth"] = person.DateBirth.ToShortDateString();
-                    int age = DateTime.Now.Year - person.DateBirth.Year;
-                    if (DateTime.Now.Month < person.DateBirth.Month ||
-                        (DateTime.Now.Month == person.DateBirth.Month && DateTime.Now.Day < person.DateBirth.Day))
-                    {
-                        age--;
-                    }
-                    ViewData["Age"] = age.ToString();
-                    ViewData["Telephone"] = person.Telephone;
-                    ViewData["NumberClass"] = db.Classes.FirstOrDefault(c => c.Id == person.ClassId).NumberClass;
-                }
+                    user.State = new StateUserStudent();
                 else if (user.UserType == "Teacher")
-                {
-                    var person = db.Teachers.FirstOrDefault(t => t.UserGUID == user.GUID);
-                    ViewData["FIO"] = person.FIO;
-                    ViewData["DateBirth"] = person.DateBirth.ToShortDateString();
-                    int age = DateTime.Now.Year - person.DateBirth.Year;
-                    if (DateTime.Now.Month < person.DateBirth.Month ||
-                        (DateTime.Now.Month == person.DateBirth.Month && DateTime.Now.Day < person.DateBirth.Day))
-                    {
-                        age--;
-                    }
-                    ViewData["Age"] = age.ToString();
-                    ViewData["Telephone"] = person.Telephone;
-                    ViewData["SubjectName"] = db.Subjects.FirstOrDefault(s => s.Id == person.SubjectId).SubjectName;
-                }
+                    user.State = new StateUserTeacher();
 
-                ViewData["UserType"] = user.UserType;
+                user.GetUserPersonalInfo(db, out personalInfo);
+
+                personalInfo.AvatarPath = Path.Combine(path, user.Avatar);
             }
 
-            return View();
+            return View(personalInfo);
         }
 
         [HttpPost]
