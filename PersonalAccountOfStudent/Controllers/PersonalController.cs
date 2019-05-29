@@ -38,6 +38,8 @@ namespace PersonalAccountOfStudent.Controllers
                 user.GetUserPersonalInfo(db, out personalInfo);
 
                 personalInfo.AvatarPath = Path.Combine(path, user.Avatar);
+
+                ViewData["UserType"] = user.UserType;
             }
 
             return View(personalInfo);

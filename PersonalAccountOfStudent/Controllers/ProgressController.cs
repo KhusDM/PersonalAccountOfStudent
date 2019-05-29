@@ -49,7 +49,7 @@ namespace PersonalAccountOfStudent.Controllers
             };
         }
 
-        public IActionResult Index()
+        public IActionResult ViewProgress()
         {
             var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
             if (user != null)

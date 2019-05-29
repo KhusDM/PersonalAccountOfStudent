@@ -41,12 +41,12 @@ namespace PersonalAccountOfStudent.Controllers
 
         public IActionResult Progress()
         {
-            return RedirectToAction("Index", "Progress");
+            return RedirectToAction("ViewProgress", "Progress");
         }
 
         public IActionResult Schedule()
         {
-            return RedirectToAction("Index", "Schedule");
+            return RedirectToAction("ViewSchedule", "Schedule");
         }
 
         public async Task<IActionResult> Logout()
