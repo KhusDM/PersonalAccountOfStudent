@@ -35,7 +35,7 @@ namespace PersonalAccountOfStudent.Controllers
             if (ModelState.IsValid)
             {
                 //User user = db.Users.FirstOrDefault(u => u.Login == model.Login && u.Password == model.Password);
-                User user = UserGateway.FindtUser(db, model.Login, model.Password);
+                User user = UserGateway.FindUser(db, model.Login, model.Password);
                 if (user != null)
                 {
                     await Authenticate(model.Login);

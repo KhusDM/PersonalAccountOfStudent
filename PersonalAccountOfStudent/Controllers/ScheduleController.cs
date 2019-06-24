@@ -32,7 +32,7 @@ namespace PersonalAccountOfStudent.Controllers
             fileInfo = new FileInfo(path);
         }
 
-        public IActionResult Index()
+        public IActionResult ViewSchedule()
         {
             var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
             if (user != null)
@@ -112,25 +112,29 @@ namespace PersonalAccountOfStudent.Controllers
 
         public async Task<IActionResult> DownloadSchedule()
         {
-            if (System.IO.File.Exists(path) && fileInfo.Length > 0)
+            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name);
+            if (user != null)
             {
-                var memory = new MemoryStream();
-                using (var stream = new FileStream(path, FileMode.Open))
+                if (System.IO.File.Exists(path) && fileInfo.Length > 0)
                 {
-                    await stream.CopyToAsync(memory);
+                    var memory = new MemoryStream();
+                    using (var stream = new FileStream(path, FileMode.Open))
+                    {
+                        await stream.CopyToAsync(memory);
+                    }
+
+                    memory.Position = 0;
+
+                    string extension = fileInfo.Extension;
+                    RegistryKey key = Registry.ClassesRoot.OpenSubKey(extension, false);
+                    object value = key != null ? key.GetValue("Content Type", null) : null;
+                    string mimeType = value != null ? value.ToString() : String.Empty;
+
+                    if (!String.IsNullOrEmpty(mimeType))
+                        return File(memory, mimeType, fileInfo.Name);
+
+                    return Content("trouble...");
                 }
-
-                memory.Position = 0;
-
-                string extension = fileInfo.Extension;
-                RegistryKey key = Registry.ClassesRoot.OpenSubKey(extension, false);
-                object value = key != null ? key.GetValue("Content Type", null) : null;
-                string mimeType = value != null ? value.ToString() : String.Empty;
-
-                if (!String.IsNullOrEmpty(mimeType))
-                    return File(memory, mimeType, fileInfo.Name);
-
-                return Content("trouble...");
             }
 
             return Content(StatusCodes.Status404NotFound.ToString());
