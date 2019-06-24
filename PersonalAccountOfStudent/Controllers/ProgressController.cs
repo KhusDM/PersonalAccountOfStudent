@@ -13,6 +13,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using PersonalAccountOfStudent.Models;
+using PersonalAccountOfStudent.TablesGateway;
 
 namespace PersonalAccountOfStudent.Controllers
 {
@@ -51,12 +52,12 @@ namespace PersonalAccountOfStudent.Controllers
 
         public IActionResult ViewProgress()
         {
-            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
+            var user = db?.Users?.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
             if (user != null)
             {
                 foreach (var subject in Assessments.Keys)
                 {
-                    Assessments[subject].AddRange(db.Assessments.Where(assessment => assessment.UserGUID == user.GUID && assessment.Subject.SubjectName == subject)
+                    Assessments[subject].AddRange(AssessmentGateway.FindAssessments(db, user.GUID, subject)
                         .Select(assessment => assessment.Mark));
                 }
 
@@ -175,7 +176,7 @@ namespace PersonalAccountOfStudent.Controllers
 
         public async Task<IActionResult> DownloadProgress()
         {
-            var user = db.Users.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
+            var user = db?.Users?.FirstOrDefault(u => u.Login == HttpContext.User.Identity.Name && u.UserType == "Student");
             if (user != null)
             {
                 var studentFIO = db.Students.FirstOrDefault(student => student.UserGUID == user.GUID).FIO;

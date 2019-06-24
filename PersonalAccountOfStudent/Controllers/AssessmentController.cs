@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalAccountOfStudent.Models;
+using PersonalAccountOfStudent.TablesGateway;
 using PersonalAccountOfStudent.ViewModels;
 
 namespace PersonalAccountOfStudent.Controllers
@@ -61,9 +62,8 @@ namespace PersonalAccountOfStudent.Controllers
                 if (ModelState.IsValid)
                 {
                     var student = db.Students.FirstOrDefault(s => s.Id == model.StudentId && s.ClassId == model.ClassId);
-                    Assessment assessment = new Assessment { UserGUID = student.UserGUID, SubjectId = model.SubjectId, Mark = model.Mark };
-                    db.Assessments.Add(assessment);
-                    db.SaveChanges();
+
+                    AssessmentGateway.InsertAssessment(db, student.UserGUID, model.SubjectId, model.Mark);
                     ViewData["Success"] = true;
                     //ModelState.AddModelError("", "Некорректные логин и(или) пароль");
                 }
